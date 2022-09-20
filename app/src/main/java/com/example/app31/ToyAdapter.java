@@ -37,7 +37,7 @@ public class ToyAdapter extends ArrayAdapter<Toy> {
 
         title.setText(temp.getTitle());
         subTitle.setText(temp.getSubTitle());
-        price.setText(temp.getPrice());
+        price.setText(String.valueOf(temp.getPrice()));
         return view;
     }
 }
