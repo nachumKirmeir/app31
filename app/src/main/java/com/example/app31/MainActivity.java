@@ -1,17 +1,23 @@
 package com.example.app31;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     ListView lv;
     ArrayList<Toy> toyList;
     ToyAdapter toyAdapter;
+    Toy lastSelected;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,5 +42,37 @@ public class MainActivity extends AppCompatActivity {
 
         toyAdapter = new ToyAdapter(this, 0,0,toyList);
         lv.setAdapter(toyAdapter);
+
+        lv.setOnItemClickListener(this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        lastSelected = toyAdapter.getItem(i);
+        Intent intent = new Intent(MainActivity.this, EditActivity.class);
+        intent.putExtra("title", lastSelected.getTitle());
+        intent.putExtra("sub", lastSelected.getSubTitle());
+        intent.putExtra("price", String.valueOf(lastSelected.getPrice()));
+         startActivityForResult(intent, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 0){
+            if(resultCode == RESULT_OK){
+                String title = data.getExtras().getString("title");
+                String sumTitle = data.getExtras().getString("sub");
+                String price = data.getExtras().getString("price");
+                lastSelected.setPrice(Integer.parseInt(price));
+                lastSelected.setTitle(title);
+                lastSelected.setSubTitle(sumTitle);
+                Toast.makeText(this, "The Data Has Saved", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(this, "User Cancel", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
