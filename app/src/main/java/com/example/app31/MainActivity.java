@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         intent.putExtra("sub", lastSelected.getSubTitle());
         intent.putExtra("price", String.valueOf(lastSelected.getPrice()));
          startActivityForResult(intent, 0);
+        Toast.makeText(this, "rf", Toast.LENGTH_SHORT).show();
     }
 
     @Override
