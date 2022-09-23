@@ -1,10 +1,13 @@
 package com.example.app31;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -12,7 +15,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     ListView lv;
     ArrayList<Toy> toyList;
@@ -44,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         lv.setAdapter(toyAdapter);
 
         lv.setOnItemClickListener(this);
+        lv.setOnItemLongClickListener(this);
+
     }
 
     @Override
@@ -74,5 +79,44 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 Toast.makeText(this, "User Cancel", Toast.LENGTH_SHORT).show();
             }
         }
+        else if(requestCode == 1){
+            if(resultCode == RESULT_OK){
+                String title = data.getExtras().getString("title");
+                String sumTitle = data.getExtras().getString("sub");
+                String price = data.getExtras().getString("price");
+                Toy newToy = new Toy(Integer.parseInt(price), title, sumTitle);
+                toyAdapter.add(newToy);
+                toyAdapter.notifyDataSetChanged();
+                Toast.makeText(this, "New Item Created", Toast.LENGTH_SHORT).show();
+            }
+            else
+                Toast.makeText(this, "No New Item", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        lastSelected = toyAdapter.getItem(i);
+        toyAdapter.remove(lastSelected);
+        toyAdapter.notifyDataSetChanged();
+        return false;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+        int id = item.getItemId();
+        if(id == R.id.action_add){
+            Intent intent = new Intent(this, EditActivity.class);
+            startActivityForResult(intent, 1);
+            return true;
+        }
+        return true;
     }
 }
